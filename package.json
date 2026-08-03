@@ -1,0 +1,27 @@
+{
+  "name": "battleship-game-engine",
+  "version": "1.0.0",
+  "description": "Game engine for the Tiki Recon project...",
+  "main": "./src/index.ts",
+  "types": "dist/index.d.ts",
+  "type": "module",
+  "author": "Gabriel Orie @gabu229",
+  "license": "ISC",
+  "scripts": {
+    "build": "tsc",
+    "watch": "tsc --watch",
+    "lint": "eslint src",
+    "format": "prettier --write \"src/**/*.ts\" \"tests/**/*.ts\"",
+    "prepublishOnly": "npm run build",
+    "test": "npx tsx src/examples/playground.ts"
+  },
+  "keywords": [],
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^26.1.2",
+    "@typescript/typescript6": "^6.0.2",
+    "eslint": "^10.8.0",
+    "prettier": "^3.9.6",
+    "typescript": "^7.0.2"
+  }
+}
