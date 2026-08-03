@@ -1,0 +1,6 @@
+# Dependency Directories
+node_modules/
+
+# Production Build Outputs
+dist/
+build/
