@@ -1,7 +1,9 @@
 // DUMMY FILE JUST FOR PLAYGROUND TESTING
-// FILE CONTENT 
+// FILE CONTENT
 
 import { Board } from "../core/board/board";
+import { Ship } from "../core/ship";
+import { ShipType } from "../types";
 import { CoordinateUtils } from "../utils/coordinate";
 
 const BOARD_SIZE = 10;
@@ -18,15 +20,17 @@ console.info(`Board size: ${BOARD_SIZE} x ${BOARD_SIZE}`);
 // const b = CoordinateUtils.random(board.boardSize);
 
 // console.log(board.getAllCells());
+const bb = board.getCell({ x: 4, y: 4 })?.coordinate;
+const ss = Ship.create(ShipType.X4, [bb!]);
 
-console.log(board.getCell({ x: 4, y: 4 })?.coordinate);
+console.log(board.getAllShips());
 
-console.log(
-  CoordinateUtils.getNeighbors(
-    board.getCell({ x: 4, y: 4 })!.coordinate,
-    board.boardSize,
-  ),
-);
+// console.log(
+//   CoordinateUtils.getNeighbors(
+//     board.getCell({ x: 4, y: 4 })!.coordinate,
+//     board.boardSize,
+//   ),
+// );
 
 // console.log({ a, b });
 

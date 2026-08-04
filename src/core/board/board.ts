@@ -1,18 +1,23 @@
 import { Cell } from "../cell";
 import { CoordinateUtils } from "../../utils/coordinate";
 import type { Coordinate, Board as SerializedBoard } from "../../types";
+import type { Ship } from "../ship";
 
 export class Board {
   private readonly cells: Map<string, Cell>;
+  private readonly ships: Map<string, Ship>;
 
   private constructor(
     private readonly size: number,
     cells?: Map<string, Cell>,
+    ships?: Map<string, Ship>,
   ) {
-    if (cells) {
+    if (cells && ships) {
       this.cells = cells;
+      this.ships = ships;
     } else {
       this.cells = new Map();
+      this.ships = new Map();
       this.initializeCells();
     }
   }
@@ -43,6 +48,15 @@ export class Board {
     return Array.from(this.cells.values());
   }
 
+  // --SHIPS--
+  getAllShips(): ReadonlyArray<Ship> {
+    return Array.from(this.ships.values());
+  }
+
+  getShip(shipId: string): Ship | undefined {
+    return this.ships.get(shipId);
+  }
+
   reset(): Board {
     return Board.create(this.size);
   }
@@ -67,5 +81,4 @@ export class Board {
 
     return new Board(size, cells);
   }
-
 }
