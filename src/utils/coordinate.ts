@@ -126,4 +126,8 @@ export class CoordinateUtils {
     }
     return coords;
   }
+
+  static manhattanDistance(a: Coordinate, b: Coordinate): number {
+    return Math.abs(a.x - b.x) + Math.abs(a.y - b.y);
+  }
 }
