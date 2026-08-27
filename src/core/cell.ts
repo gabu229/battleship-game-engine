@@ -33,6 +33,10 @@ export class Cell {
     return this._coordinate;
   }
 
+  get isHit(): boolean {
+    return this._isHit;
+  }
+
   get state(): CellState {
     if (!this._isHit) {
       return this._ship ? CellState.Ship : CellState.Empty;

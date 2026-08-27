@@ -51,3 +51,15 @@ export interface IWeapon {
     boardSize: number,
   ): ReadonlyArray<Coordinate>;
 }
+
+export interface AttackResult {
+  readonly success: boolean;
+  readonly coordinates: ReadonlyArray<Coordinate>;
+  readonly hits: ReadonlyArray<Coordinate>;
+  readonly misses: ReadonlyArray<Coordinate>;
+  readonly destroyedShips: ReadonlyArray<Ship>;
+  readonly hasExtraTurn: boolean;
+  readonly winnerId: string | null;
+  readonly error?: string;
+}
+

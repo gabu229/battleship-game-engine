@@ -1,17 +1,21 @@
 import { Cell } from "../cell";
 import { CoordinateUtils } from "../../utils/coordinate";
-import type { Coordinate, Board as SerializedBoard } from "../../types";
+import type { Coordinate, Board as SerializedBoard, ShipType } from "../../types";
 import type { Ship } from "../ship";
+import { PlacementValidator } from "./placement-validator";
 
 export class Board {
   private readonly cells: Map<string, Cell>;
   private readonly ships: Map<string, Ship>;
+  private readonly validator: PlacementValidator;
 
   private constructor(
     private readonly size: number,
     cells?: Map<string, Cell>,
     ships?: Map<string, Ship>,
   ) {
+    this.validator = new PlacementValidator(size);
+
     if (cells && ships) {
       this.cells = cells;
       this.ships = ships;
@@ -80,5 +84,55 @@ export class Board {
     // TODO: Recreate other elements from json data
 
     return new Board(size, cells);
+  }
+
+  attack(coordinate: Coordinate): Board {
+    const key = CoordinateUtils.toKey(coordinate);
+    const cell = this.cells.get(key);
+
+    if (!cell) {
+      throw new Error("Invalid coordinate");
+    }
+
+    if (cell.isHit) {
+      throw new Error("Coordinate already attacked");
+    }
+
+    const newCells = new Map(this.cells);
+    newCells.set(key, cell.withHit());
+
+    // Update ship if hit
+    let newShips = new Map(this.ships);
+    if (cell.ship) {
+      const updatedShip = cell.ship.registerHit(coordinate);
+      newShips.set(updatedShip.id, updatedShip);
+    }
+
+    return new Board(this.size, newCells, newShips);
+  }
+
+  isAttacked(coordinate: Coordinate): boolean {
+    const cell = this.getCell(coordinate);
+    return cell?.isHit ?? false;
+  }
+
+  private getPlacedShipTypes(): ReadonlyArray<ShipType> {
+    return Array.from(this.ships.values()).map((ship) => ship.type);
+  }
+
+  areAllShipsPlaced(): boolean {
+    const placedTypes = this.getPlacedShipTypes();
+    const validation = this.validator.validateAllShipsPlaced(placedTypes);
+    return validation.valid;
+  }
+
+  areAllShipsDestroyed(): boolean {
+    if (this.ships.size === 0) return false;
+    return Array.from(this.ships.values()).every((ship) => ship.isDestroyed);
+  }
+
+  getRemainingShipsCount(): number {
+    return Array.from(this.ships.values()).filter((ship) => !ship.isDestroyed)
+      .length;
   }
 }
