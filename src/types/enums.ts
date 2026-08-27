@@ -32,3 +32,12 @@ export const SHIP_LENGTHS: Record<ShipType, number> = {
   [ShipType.X3]: 3,
   [ShipType.X2]: 2,
 };
+
+export enum WeaponType {
+  SingleShot = "SINGLE_SHOT",
+  Bomb2x2 = "BOMB_2X2",
+  CrossBomb = "CROSS_BOMB",
+  HorizontalStrike = "HORIZONTAL_STRIKE",
+  VerticalStrike = "VERTICAL_STRIKE",
+  SonarScan = "SONAR_SCAN",
+}

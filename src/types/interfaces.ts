@@ -1,4 +1,4 @@
-import type { CellState, Direction, ShipType } from "./enums";
+import type { CellState, Direction, ShipType, WeaponType } from "./enums";
 
 /**
  * Coordinate on the game board
@@ -35,4 +35,19 @@ export interface ShipPlacement {
   readonly type: ShipType;
   readonly start: Coordinate;
   readonly direction: Direction;
+}
+
+export interface PlacementValidationResult {
+  readonly valid: boolean;
+  readonly error?: string;
+}
+
+export interface IWeapon {
+  readonly type: WeaponType;
+  readonly name: string;
+  readonly isSonar: boolean;
+  generateTargetCoordinates(
+    origin: Coordinate,
+    boardSize: number,
+  ): ReadonlyArray<Coordinate>;
 }
