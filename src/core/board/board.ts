@@ -1,7 +1,14 @@
 import { Cell } from "../cell";
 import { CoordinateUtils } from "../../utils/coordinate";
-import type { Coordinate, Board as SerializedBoard, ShipType } from "../../types";
-import type { Ship } from "../ship";
+import type {
+  Coordinate,
+  Board as SerializedBoard,
+  ShipPlacement,
+  ShipType,
+  VisibleBoard,
+  VisibleCell,
+} from "../../types";
+import { Ship } from "../ship";
 import { PlacementValidator } from "./placement-validator";
 
 export class Board {
@@ -59,6 +66,50 @@ export class Board {
 
   getShip(shipId: string): Ship | undefined {
     return this.ships.get(shipId);
+  }
+
+  private getAllOccupiedCoordinates(): ReadonlyArray<Coordinate> {
+    const coordinates: Coordinate[] = [];
+    for (const ship of this.ships.values()) {
+      coordinates.push(...ship.coordinates);
+    }
+    return coordinates;
+  }
+
+  placeShip(placement: ShipPlacement): Board {
+    // Validate placement
+    const existingCoordinates = this.getAllOccupiedCoordinates();
+    const validation = this.validator.validate(placement, existingCoordinates);
+
+    if (!validation.valid) {
+      throw new Error(validation.error);
+    }
+
+    // Check if ship type already placed
+    const placedTypes = this.getPlacedShipTypes();
+    if (this.validator.isShipTypePlaced(placement.type, placedTypes)) {
+      throw new Error(`Ship type ${placement.type} has already been placed`);
+    }
+
+    // Generate coordinates and create ship
+    const coordinates = this.validator.generateCoordinates(placement);
+    const ship = Ship.create(placement.type, coordinates);
+
+    // Create new cells with ship
+    const newCells = new Map(this.cells);
+    for (const coord of coordinates) {
+      const key = CoordinateUtils.toKey(coord);
+      const cell = newCells.get(key);
+      if (cell) {
+        newCells.set(key, cell.withShip(ship));
+      }
+    }
+
+    // Add ship
+    const newShips = new Map(this.ships);
+    newShips.set(ship.id, ship);
+
+    return new Board(this.size, newCells, newShips);
   }
 
   reset(): Board {
@@ -134,5 +185,47 @@ export class Board {
   getRemainingShipsCount(): number {
     return Array.from(this.ships.values()).filter((ship) => !ship.isDestroyed)
       .length;
+  }
+
+  getVisibleBoard(isOwnBoard: boolean): VisibleBoard {
+    const visibleCells: VisibleCell[] = [];
+
+    for (const cell of this.cells.values()) {
+      visibleCells.push({
+        coordinate: cell.coordinate,
+        state: cell.getVisibleState(isOwnBoard),
+        isOwnBoard,
+      });
+    }
+
+    return {
+      cells: visibleCells,
+      remainingShips: this.getRemainingShipsCount(),
+    };
+  }
+
+  clone(): Board {
+    const newCells = new Map<string, Cell>();
+    const newShips = new Map<string, Ship>();
+
+    // Clone ships first
+    for (const [id, ship] of this.ships) {
+      newShips.set(id, ship.clone());
+    }
+
+    // Clone cells with references to cloned ships
+    for (const [key, cell] of this.cells) {
+      const clonedShip = cell.ship
+        ? (newShips.get(cell.ship.id) ?? null)
+        : null;
+      const clonedCell = new (Cell as any)(
+        { ...cell.coordinate },
+        clonedShip,
+        cell.isHit,
+      );
+      newCells.set(key, clonedCell);
+    }
+
+    return new Board(this.size, newCells, newShips);
   }
 }
