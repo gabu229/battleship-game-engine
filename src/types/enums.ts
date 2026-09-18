@@ -1,4 +1,6 @@
 export enum GameState {
+  WaitingForPlayers = "AWAITING_PLAYERS",
+  PlacingShips = "PLACING_SHIPS",
   Ready = "READY",
   InProgress = "IN_PROGRESS",
   Finished = "FINISHED",
@@ -40,4 +42,26 @@ export enum WeaponType {
   HorizontalStrike = "HORIZONTAL_STRIKE",
   VerticalStrike = "VERTICAL_STRIKE",
   SonarScan = "SONAR_SCAN",
+}
+
+export enum BotDifficulty {
+  Easy = "EASY",
+  Medium = "MEDIUM",
+  Hard = "HARD",
+}
+
+export enum GameEventType {
+  GameStarted = "GAME_STARTED",
+  PlayerJoined = "PLAYER_JOINED",
+  PlayerRemoved = "PLAYER_REMOVED",
+  ShipPlaced = "SHIP_PLACED",
+  AllShipsPlaced = "ALL_SHIPS_PLACED",
+  AttackMade = "ATTACK_MADE",
+  Miss = "MISS",
+  Hit = "HIT",
+  ShipSunk = "SHIP_SUNK",
+  WeaponUsed = "WEAPON_USED",
+  TurnChanged = "TURN_CHANGED",
+  GameFinished = "GAME_FINISHED",
+  StateChanged = "STATE_CHANGED",
 }
